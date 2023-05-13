@@ -17,6 +17,10 @@ struct list {
 int LIMITING_SIZE = 0x7FFFFFFF;
 int CURRENT_SIZE = 0;
 
+// caching for the last generated list
+struct list* CACHE_ROOT = NULL;
+struct list* CACHE_CURR = NULL;
+
 // sets the limit for the list that will be generated
 void setLimit(int n) {
     LIMITING_SIZE = n;
@@ -73,6 +77,9 @@ struct list* genCollatzSequence(int n) {
         curr = newNode;
         CURRENT_SIZE++;
     }
+
+    CACHE_ROOT = root;
+    CACHE_CURR = curr;
 
     return root;
 }
