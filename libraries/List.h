@@ -67,7 +67,9 @@ struct list* genCollatzSequence(int n) {
 
         struct list* newNode = genNode(n);
         connectNode(curr, newNode);
+
         curr = newNode;
+        CURRENT_SIZE++;
     }
 
     return root;
