@@ -14,7 +14,7 @@ struct list {
     struct list* next;
 };
 
-int LIMITING_SIZE = 1024;
+int LIMITING_SIZE = 0x7FFFFFFF;
 int CURRENT_SIZE = 0;
 
 // sets the limit for the list that will be generated
@@ -56,6 +56,8 @@ struct list* genNode(int n) {
 // generates a collatz sequence of numbers with the given
 // number n, which will be used for 3n + 1 and n/2
 struct list* genCollatzSequence(int n) {
+    CURRENT_SIZE = 0;
+
     struct list* root = genNode(n);
     struct list* curr = root;
 
