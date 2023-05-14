@@ -15,8 +15,8 @@
 ////////////////////////
 int setKeySeed(char* key, int size);
 
-char ROTR(char a, char s);
-char ROTL(char a, char s);
+char ROTR(unsigned char a, unsigned char s);
+char ROTL(unsigned char a, unsigned char s);
 
 ///////////////////////
 //  Encryption part  //
@@ -24,8 +24,8 @@ char ROTL(char a, char s);
 char singleEncrypt(char a, char k, char collatzFactor, char s);
 char singleDecrypt(char e, char k, char collatzFactor, char s);
 
-char* bufferEncrypt(char* buffer, long bufferSize, char* key, long keySize);
-char* bufferDecrypt(char* buffer, long bufferSize, char* key, long keySize);
+char* bufferEncrypt(char* buffer, long bufferSize, char* key, int keySize);
+char* bufferDecrypt(char* buffer, long bufferSize, char* key, int keySize);
 
 ////////////////////
 //  redefinition  //
@@ -35,12 +35,14 @@ char* bufferDecrypt(char* buffer, long bufferSize, char* key, long keySize);
 // char s will be the number of shifts that will be done
 // the shift will be any number from 0-7 since, the rest
 // will only affect the same way
-char ROTR(char a, char s) {
-    return ((a >> (s % 8)) ^ (a << (8 - (s % 8)))) & 0xFF;
+char ROTR(unsigned char a, unsigned char s) {
+    s = s % 8;
+    return (a >> s) | (a << (8 - s));
 }
 
-char ROTL(char a, char s) {
-    return ((a << (s % 8)) ^ (a >> (8 - (s % 8)))) & 0xFF;
+char ROTL(unsigned char a, unsigned char s) {
+    s = s % 8;
+    return (a << s) | (a >> (8 - s));
 }
 
 // generate the seed from the key
@@ -57,9 +59,43 @@ int setKeySeed(char* key, int size) {
 // k - character key
 // s - number of shifts
 char singleEncrypt(char a, char k, char collatzFactor, char s) {
-    return ROTR(ROTL(a, s) ^ collatzFactor, s) ^ ((k * collatzFactor) & 0xFF);
+    return ROTL(ROTR((a ^ k), s) ^ ((collatzFactor * k) & 0xFF), s);
 }
 
 char singleDecrypt(char e, char k, char collatzFactor, char s) {
-    return ROTR(ROTL(((k * collatzFactor) & 0xFF) ^ e, s) ^ collatzFactor, s);
+    return ROTL(ROTR(e, s) ^ ((collatzFactor * k) & 0xFF), s) ^ k;
+}
+
+char* bufferEncrypt(char* buffer, long bufferSize, char* key, int keySize) {
+    int seed = setKeySeed(key, keySize);
+    char shifts = (seed % 8);
+
+    // convert the singly list to circular linked list
+    struct list* colz = genCollatzSequence(seed);
+    CACHE_CURR->next = colz;
+
+    char* bufferCopy = malloc(sizeof(char) * bufferSize);
+    for (long i = 0; i < bufferSize; i++) {
+        bufferCopy[i] = singleEncrypt(buffer[i], key[i % keySize], (colz->data & 0xFF), shifts);
+        colz = colz->next;
+    }
+
+    return bufferCopy;
+}
+
+char* bufferDecrypt(char* buffer, long bufferSize, char* key, int keySize) {
+    int seed = setKeySeed(key, keySize);
+    char shifts = (seed % 8);
+
+    // convert the singly list to circular linked list
+    struct list* colz = genCollatzSequence(seed);
+    CACHE_CURR->next = colz;
+
+    char* bufferCopy = malloc(sizeof(char) * bufferSize);
+    for (long i = 0; i < bufferSize; i++) {
+        bufferCopy[i] = singleDecrypt(buffer[i], key[i % keySize], (colz->data & 0xFF), shifts);
+        colz = colz->next;
+    }
+
+    return bufferCopy;
 }
