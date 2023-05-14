@@ -1,7 +1,7 @@
 #include "../libraries/CollEnc.h"
 
 int main() {
-    char a = 'A';
+    char a = 'a';
     char k = 'B';
     char f = 32;
     char s = 2;
@@ -15,5 +15,14 @@ int main() {
 
     printf("Normal: %d\n", a);
     printf("Right: %d\n", ROTR(a, s));
-    printf("Back: %d\n", ROTL(ROTR(a, s), s));
+    printf("Back: %d\n\n", ROTL(ROTR(a, s), s));
+
+    char word[] = "My name is Hubert\0";
+    char key[] = "ricknmorty";
+
+    char* encrypted = bufferEncrypt(word, 17, key, 10);
+    char* decrypted = bufferDecrypt(encrypted, 17, key, 10);
+
+    printf("Normal: %s\n", word);
+    printf("Decrypted: %s", decrypted);
 }
