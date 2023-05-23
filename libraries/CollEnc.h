@@ -10,6 +10,9 @@
 #include <stdlib.h>
 #include "List.h"
 
+#ifndef
+#define COLLENC_H
+
 ////////////////////////
 //  helper functions  //
 ////////////////////////
@@ -99,3 +102,5 @@ char* bufferDecrypt(char* buffer, long bufferSize, char* key, int keySize) {
 
     return bufferCopy;
 }
+
+#endif

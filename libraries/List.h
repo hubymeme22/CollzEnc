@@ -9,6 +9,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifndef
+#define LIST_H
+
 struct list {
     int data;
     struct list* next;
@@ -83,3 +86,5 @@ struct list* genCollatzSequence(int n) {
 
     return root;
 }
+
+#endif
