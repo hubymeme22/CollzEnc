@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include "List.h"
 
-#ifndef
+#ifndef COLLENC_H
 #define COLLENC_H
 
 ////////////////////////
